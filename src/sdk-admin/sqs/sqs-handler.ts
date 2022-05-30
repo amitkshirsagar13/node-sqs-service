@@ -1,7 +1,8 @@
-import {Request, Response} from 'express';
+import {Request, response, Response} from 'express';
 import AWS from 'aws-sdk';
 import env from '../../config/env';
 import { Consumer } from 'sqs-consumer';
+import { BaseMessage } from '../../message-models/BaseMessage';
 
 const sqs = new AWS.SQS({
   apiVersion: '2012-11-05',
@@ -55,29 +56,36 @@ export const listQueues = () => (_req: Request, res: Response, _next:any) => {
   });
 }
 
-export const publish = () => (req: Request, res: Response, _next: any) => {
-    const queueName = req.params.queueName;
-    const message = req.body;
-    console.log(message);
-    let msgParams = {
-        QueueUrl:
-        env.SERVICE_ENDPOINT + "/" + env.ACCOUNT_ID + "/" + queueName,
-        MessageBody: JSON.stringify(message)
+export const publish = () => async (req: Request, res: Response, _next: any) => {
+  const queueName = req.params.queueName;
+  const message = {...req.body, targetQueueName: queueName};
+  publishMessage(message).then((response: any) => {
+    res.status(response.code).json(response);
+  });
+}
+
+export const publishMessage = async (message: BaseMessage) => {
+  let msgParams = {
+    QueueUrl:
+    env.SERVICE_ENDPOINT + "/" + env.ACCOUNT_ID + "/" + message.targetQueueName,
+    MessageBody: JSON.stringify(message)
+  };
+  try {
+    const messageResponse = await sqs.sendMessage(msgParams).promise();
+    return {
+      code: 202,
+      status: "accepted",
+      message: "sent to queue",
+      MessageId: messageResponse.MessageId,
+      SequenceNumber: messageResponse.SequenceNumber
     };
-    sqs.sendMessage(msgParams, (err, data) => {
-        if (err) {
-            res.status(500).json({
-                status: "internal server error",
-                error: err
-            });
-        } else {
-            res.status(202).json({
-                status: "accepted",
-                messageId: data.MessageId,
-                message: "sent to queue"
-            });
-        }
-    });
+  } catch(err) {
+    return {
+      code: 501,
+      status: "failure",
+      message: "failed message sent to queue"
+    };
+  }
 }
 
 export const createSimpleQueue = (QueueName: string): any => {
