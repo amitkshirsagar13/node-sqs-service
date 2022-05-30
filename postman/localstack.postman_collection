@@ -41,7 +41,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n\t\"token\":\"\",\r\n\t\"token\":\"\",\r\n\t\"sourceFileName\": \"ask.pdf\",\r\n\t\"sourceFileDownloadTicket\": \"originalFileDownloadTicket\",\r\n\t\"thumbnailFileUploadTicket\": \"uploadTicket\",\r\n\t\"thumbnailOptions\": {\r\n\t\t\"height\": 256,\r\n\t\t\"width\": 256,\r\n\t\t\"percentage\": 25,\r\n\t\t\"jpegOptions\": {\r\n\t\t\t\"force\": true,\r\n\t\t\t\"quality\": 90\r\n\t\t},\r\n\t\t\"responseType\": \"base64\"\r\n\t}\r\n}"
+					"raw": "{\r\n\t\"token\":\"\",\r\n\t\"correlationId\":\"\",\r\n\t\"targetQueueName\":\"\",\r\n\t\"sourceFileName\": \"ask.pdf\",\r\n\t\"sourceFileDownloadTicket\": \"originalFileDownloadTicket\",\r\n\t\"thumbnailFileUploadTicket\": \"uploadTicket\",\r\n\t\"thumbnailOptions\": {\r\n\t\t\"height\": 256,\r\n\t\t\"width\": 256,\r\n\t\t\"percentage\": 25,\r\n\t\t\"jpegOptions\": {\r\n\t\t\t\"force\": true,\r\n\t\t\t\"quality\": 90\r\n\t\t},\r\n\t\t\"responseType\": \"base64\"\r\n\t}\r\n}"
 				},
 				"description": ""
 			},
