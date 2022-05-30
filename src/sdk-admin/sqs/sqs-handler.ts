@@ -1,4 +1,3 @@
-import {Request, response, Response} from 'express';
 import AWS from 'aws-sdk';
 import env from '../../config/env';
 import { Consumer } from 'sqs-consumer';
@@ -22,47 +21,6 @@ const params = {
     'env': 'local'
   }
 };
-
-export const createQueue = () => (req: Request, res: Response, next:any) => {
-  try {
-    const queueName = req.params?.queueName;
-    const data = createSimpleQueue(queueName);
-    res.status(200).json({
-            status: "OK",
-            data
-          });
-    console.log('Creating %s Resource!!!', queueName)
-  } catch (error) {
-    console.error('Handle create sdk resource failed!!!', error);
-  } finally {
-    next();
-  }
-}
-
-export const listQueues = () => (_req: Request, res: Response, _next:any) => {
-  sqs.listQueues({}, (err, data) => {
-    console.log('Listing Queues!!!');
-    if (err) {
-      res.status(500).json({
-        status: "internal server error",
-        error: err
-      });
-    } else {
-      res.status(200).json({
-        status: "OK",
-        urls: data.QueueUrls
-      });
-    }
-  });
-}
-
-export const publish = () => async (req: Request, res: Response, _next: any) => {
-  const queueName = req.params.queueName;
-  const message = {...req.body, targetQueueName: queueName};
-  publishMessage(message).then((response: any) => {
-    res.status(response.code).json(response);
-  });
-}
 
 export const publishMessage = async (message: BaseMessage) => {
   let msgParams = {
@@ -115,4 +73,21 @@ export const sqsListener = (queueName: string, worker: any) => {
   });
 
   consumer.start();
+}
+
+export const listQueues = () => {
+  sqs.listQueues({}, (err, data) => {
+    console.log('Listing Queues!!!');
+  //   if (err) {
+  //     res.status(500).json({
+  //       status: "internal server error",
+  //       error: err
+  //     });
+  //   } else {
+  //     res.status(200).json({
+  //       status: "OK",
+  //       urls: data.QueueUrls
+  //     });
+  //   }
+  });
 }

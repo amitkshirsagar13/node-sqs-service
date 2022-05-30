@@ -1,8 +1,7 @@
-import * as express from 'express';
-import { createQueue, listQueues, publish } from './sqs-handler';
+import { createQueue, listQueues, publish } from './sqs-route-handler';
 import { Router } from 'express';
 
-const routes = express.Router();
+const routes = Router();
 routes.get('/create/:queueName', createQueue());
 routes.get('/list', listQueues());
 routes.post('/publish/:queueName', publish());
