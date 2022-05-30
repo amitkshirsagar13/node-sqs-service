@@ -1,0 +1,53 @@
+{
+	"variables": [],
+	"info": {
+		"name": "localstack",
+		"_postman_id": "f05f3376-26c1-d5a6-a347-9e5b10776166",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "publishMessage",
+			"request": {
+				"url": "http://localhost:5000/admin/sqs/publish/demo",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"message\": \"Hello World!!!\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "listQueues",
+			"request": {
+				"url": "http://localhost:5000/admin/sqs/list",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "createQueue",
+			"request": {
+				"url": "http://localhost:5000/admin/sqs/create/demo",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
