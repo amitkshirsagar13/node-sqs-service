@@ -23,4 +23,4 @@ createDefaultQueues(['demo']);
 sqsListener('demo', messageHandler);
 const server = app.listen(port, host, () => {
    console.log("SQS app listening at http://%s:%s", host, port)
-})
+});
