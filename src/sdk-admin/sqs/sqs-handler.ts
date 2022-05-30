@@ -80,7 +80,7 @@ export const publish = () => (req: Request, res: Response, _next: any) => {
     });
 }
 
-const createSimpleQueue = (QueueName: string): any => {
+export const createSimpleQueue = (QueueName: string): any => {
   const queuParams = {...params, QueueName}
   sqs.createQueue(queuParams, (err, data) => {
     if (err) {

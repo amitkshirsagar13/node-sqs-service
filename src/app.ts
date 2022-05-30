@@ -1,6 +1,6 @@
 import express from 'express';
 import { sdkAdminRoutes } from './sdk-admin/sdk-admin';
-import { sqsListener } from './sdk-admin/sqs/sqs-handler';
+import { sqsListener, createSimpleQueue } from './sdk-admin/sqs/sqs-handler';
 import messageHandler from './file-event-handler/message-handler';
 
 const app = express();
@@ -11,12 +11,16 @@ app.use(express.json());
 app.use('/admin', sdkAdminRoutes);
 
 app.get('/', function (req, res) {
-   const body = req.body;
    res.send('Hello!!!');
 });
 
-sqsListener('demo', messageHandler);
+const createDefaultQueues = (queueNameList: string[]) => {
+   queueNameList.forEach((queueName) => createSimpleQueue(queueName));
+}
 
+createDefaultQueues(['demo']);
+
+sqsListener('demo', messageHandler);
 const server = app.listen(port, host, () => {
    console.log("SQS app listening at http://%s:%s", host, port)
 })
