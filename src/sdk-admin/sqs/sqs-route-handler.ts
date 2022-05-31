@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import AWS from 'aws-sdk';
 import env from '../../config/env';
-import { createSimpleQueue, listAsyncQueues, listSimpleQueues, publishMessage } from './sqs-handler';
+import { createSimpleQueue, listAsyncQueues, publishMessage } from './sqs-handler';
 
 const sqs = new AWS.SQS({
   apiVersion: '2012-11-05',
@@ -40,8 +40,8 @@ export const createQueue = () => (req: Request, res: Response, next:any) => {
 
 export const listQueues = () => async (_req: Request, res: Response, next: any) => {
   try {
-    const queueList = await listAsyncQueues();
-    res.status(200).json(queueList);
+    const listResponse = await listAsyncQueues();
+    res.status(listResponse.code).json(listResponse);
   } catch (error) {
     console.error('Handle list sdk resource failed!!!', error);
   } finally {

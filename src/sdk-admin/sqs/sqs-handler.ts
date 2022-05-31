@@ -63,8 +63,7 @@ export const publishMessage = async (message: BaseMessage) => {
       code: 202,
       status: "accepted",
       message: "sent to queue",
-      MessageId: messageResponse.MessageId,
-      SequenceNumber: messageResponse.SequenceNumber
+      data: messageResponse
     };
   } catch(err) {
     return {
@@ -76,28 +75,18 @@ export const publishMessage = async (message: BaseMessage) => {
 }
 
 export const listAsyncQueues = async () => {
-  const queueList = await (await sqs.listQueues({}).promise()).QueueUrls;
-  return queueList;
-}
-
-export const listSimpleQueues = async () => {
-  const response = {
-    status: 0,
-    response: {},
-    error: {}
-  };
   try {
-    console.log('Listing Queues!!!');
-    const listResponse = await sqs.listQueues({});
-    console.log(listResponse);
-    response.status = 200;
-    response.response =  {
-      queueList: listResponse
-    }
-  } catch (err) {
-    response.status = 500;
-    response.response = { message: "Failed to list the queues!!!" };
-    response.error = err;
+    const queueList = await (await sqs.listQueues({}).promise()).QueueUrls;
+    return {
+      code: 200,
+      status: "success",
+      data: queueList
+    };
+  } catch(err) {
+    return {
+      code: 500,
+      status: "failure",
+      message: "failed message sent to queue"
+    };
   }
-  return response;
 }
