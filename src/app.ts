@@ -1,7 +1,8 @@
 import express from 'express';
 import { sdkAdminRoutes } from './sdk-admin/sdk-admin';
-import { sqsListener, createSimpleQueue } from './sdk-admin/sqs/sqs-handler';
-import { demoEventHandler, thumbnailEventHandler } from './file-event-handler/message-handler';
+import { demoEventHandler } from './event-handlers/demo-event-handler';
+import { thumbnailEventHandler } from './event-handlers/thumbnail-event-handler';
+import { createSimpleQueue, sqsListener } from './sdk-admin/sqs/sqs-handler';
 
 const app = express();
 const port = 5000;

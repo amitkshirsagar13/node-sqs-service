@@ -22,42 +22,6 @@ const params = {
   }
 };
 
-export const publishMessage = async (message: BaseMessage) => {
-  let msgParams = {
-    QueueUrl:
-    env.SERVICE_ENDPOINT + "/" + env.ACCOUNT_ID + "/" + message.targetQueueName,
-    MessageBody: JSON.stringify(message)
-  };
-  try {
-    const messageResponse = await sqs.sendMessage(msgParams).promise();
-    return {
-      code: 202,
-      status: "accepted",
-      message: "sent to queue",
-      MessageId: messageResponse.MessageId,
-      SequenceNumber: messageResponse.SequenceNumber
-    };
-  } catch(err) {
-    return {
-      code: 501,
-      status: "failure",
-      message: "failed message sent to queue"
-    };
-  }
-}
-
-export const createSimpleQueue = (QueueName: string): any => {
-  const queuParams = {...params, QueueName}
-  sqs.createQueue(queuParams, (err, data) => {
-    if (err) {
-      console.log(err, err.stack);
-      return undefined;
-    } else {
-      return data;
-    }
-  });
-}
-
 export const sqsListener = (queueName: string, worker: any) => {
   const consumer = Consumer.create({
     queueUrl: env.SERVICE_ENDPOINT + "/" + env.ACCOUNT_ID + "/" + queueName,
@@ -75,19 +39,65 @@ export const sqsListener = (queueName: string, worker: any) => {
   consumer.start();
 }
 
-export const listQueues = () => {
-  sqs.listQueues({}, (err, data) => {
-    console.log('Listing Queues!!!');
-  //   if (err) {
-  //     res.status(500).json({
-  //       status: "internal server error",
-  //       error: err
-  //     });
-  //   } else {
-  //     res.status(200).json({
-  //       status: "OK",
-  //       urls: data.QueueUrls
-  //     });
-  //   }
+export const createSimpleQueue = (QueueName: string): any => {
+  const queuParams = {...params, QueueName}
+  sqs.createQueue(queuParams, (err, data) => {
+    if (err) {
+      console.log(err, err.stack);
+      return undefined;
+    } else {
+      return data;
+    }
   });
+}
+
+export const publishMessage = async (message: BaseMessage) => {
+  let msgParams = {
+    QueueUrl:
+    env.SERVICE_ENDPOINT + "/" + env.ACCOUNT_ID + "/" + message.targetQueueName,
+    MessageBody: JSON.stringify(message)
+  };
+  try {
+    const messageResponse = await sqs.sendMessage(msgParams).promise();
+    return {
+      code: 202,
+      status: "accepted",
+      message: "sent to queue",
+      MessageId: messageResponse.MessageId,
+      SequenceNumber: messageResponse.SequenceNumber
+    };
+  } catch(err) {
+    return {
+      code: 500,
+      status: "failure",
+      message: "failed message sent to queue"
+    };
+  }
+}
+
+export const listAsyncQueues = async () => {
+  const queueList = await (await sqs.listQueues({}).promise()).QueueUrls;
+  return queueList;
+}
+
+export const listSimpleQueues = async () => {
+  const response = {
+    status: 0,
+    response: {},
+    error: {}
+  };
+  try {
+    console.log('Listing Queues!!!');
+    const listResponse = await sqs.listQueues({});
+    console.log(listResponse);
+    response.status = 200;
+    response.response =  {
+      queueList: listResponse
+    }
+  } catch (err) {
+    response.status = 500;
+    response.response = { message: "Failed to list the queues!!!" };
+    response.error = err;
+  }
+  return response;
 }

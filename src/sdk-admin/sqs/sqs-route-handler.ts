@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import AWS from 'aws-sdk';
 import env from '../../config/env';
-import { createSimpleQueue, publishMessage } from './sqs-handler';
+import { createSimpleQueue, listAsyncQueues, listSimpleQueues, publishMessage } from './sqs-handler';
 
 const sqs = new AWS.SQS({
   apiVersion: '2012-11-05',
@@ -38,15 +38,26 @@ export const createQueue = () => (req: Request, res: Response, next:any) => {
   }
 }
 
-export const listQueues = () => (_req: Request, res: Response, _next:any) => {
-  const queueList = listQueues();
-  res.send(200).json(queueList);
+export const listQueues = () => async (_req: Request, res: Response, next: any) => {
+  try {
+    const queueList = await listAsyncQueues();
+    res.status(200).json(queueList);
+  } catch (error) {
+    console.error('Handle list sdk resource failed!!!', error);
+  } finally {
+    next();
+  }
 }
 
-export const publish = () => async (req: Request, res: Response, _next: any) => {
+export const publish = () => async (req: Request, res: Response, next: any) => {
   const queueName = req.params.queueName;
-  const message = {...req.body, targetQueueName: queueName};
-  publishMessage(message).then((response: any) => {
-    res.status(response.code).json(response);
-  });
+  const message = { ...req.body, targetQueueName: queueName };
+  try {
+    const publishResponse = await publishMessage(message);
+    res.status(publishResponse.code).json(publishResponse);
+  } catch (error) {
+    console.error('Handle publish sdk resource failed!!!', error);
+  } finally {
+    next();
+  }
 }
